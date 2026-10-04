@@ -1,0 +1,1021 @@
+{
+  "app": "AgriYield AI",
+  "generated_at": "2026-10-04T11:57:21+00:00",
+  "seed": 20240101,
+  "python": "3.14.4",
+  "platform": "Windows",
+  "libraries": {
+    "pandas": "3.0.5",
+    "numpy": "2.5.2",
+    "sklearn": "1.9.0",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.7.0",
+    "joblib": "1.6.0"
+  },
+  "provenance": {
+    "source": "synthetic",
+    "path": "C:\\aadilyf\\CropProductionAnalysis\\data\\raw\\crop_production_synthetic.csv",
+    "sha256": "4de417cbcbee376289162161ccd68f18be32e90b213e994b221ac5137e3e3c5c",
+    "rows_raw": 60000,
+    "rows_clean": 57352,
+    "loaded_at": "2026-10-04T11:57:26+00:00",
+    "is_synthetic": true
+  },
+  "data_quality": {
+    "rows_in": 60000,
+    "rows_out": 57352,
+    "rows_dropped_total": 2648,
+    "resolved_columns": {
+      "crop": "Crop",
+      "variety": "Variety",
+      "state": "state",
+      "quantity": "Quantity",
+      "production": "production",
+      "season": "Season",
+      "unit": "Unit",
+      "cost": "Cost",
+      "recommended_zone": "Recommended Zone",
+      "year": "Year"
+    },
+    "unmapped_columns": [],
+    "missing_required": [],
+    "coerced_numeric": {},
+    "dropped_rows": {
+      "missing_production": 895,
+      "nonpositive_quantity": 570,
+      "missing_cost": 1226,
+      "total": 2648
+    },
+    "normalised_units": {
+      "Tons": 12248,
+      "Quintals": 44652,
+      "Unknown": 452
+    },
+    "string_trims": 12723,
+    "case_fixes": 5649,
+    "unit_fallbacks": 452,
+    "notes": [
+      "452 rows had an unrecognised unit and were treated as quintals.",
+      "Year window observed: 2001-2014"
+    ]
+  },
+  "split": {
+    "strategy": "random",
+    "description": "Random 80/20 shuffle",
+    "test_size": 0.2,
+    "calibration_size": 0.15,
+    "n_fit": 38721,
+    "n_calibration": 6834,
+    "n_test": 11389,
+    "n_outliers_excluded": 408
+  },
+  "interval": {
+    "nominal_coverage": 0.8,
+    "quantile_alphas": [
+      0.1,
+      0.9
+    ],
+    "method": "Quantile gradient boosting (reg:quantileerror) on log1p(target), widened by a scalar factor fitted on a held-out calibration split. The bootstrap ensemble is reported as a stability diagnostic only -- see the note in predict_with_interval."
+  },
+  "feature_audit": [
+    {
+      "model": "Production (yield)",
+      "target": "production_quintals",
+      "n_features": 15,
+      "high_cardinality_encoded": "state, crop, variety, recommended_zone",
+      "one_hot_encoded": "season_name, season_duration, unit, zone_scope, crop_group, variety_class",
+      "numeric": "quantity, year, log_quantity, sqrt_quantity, year_index",
+      "excluded_to_avoid_leakage": "cost, cost_per_unit, is_outlier, production, production_efficiency, production_quintals, production_tons"
+    },
+    {
+      "model": "Cultivation cost",
+      "target": "cost",
+      "n_features": 15,
+      "high_cardinality_encoded": "state, crop, variety, recommended_zone",
+      "one_hot_encoded": "season_name, season_duration, unit, zone_scope, crop_group, variety_class",
+      "numeric": "quantity, year, log_quantity, sqrt_quantity, year_index",
+      "excluded_to_avoid_leakage": "cost, cost_per_unit, is_outlier, production, production_efficiency, production_quintals, production_tons"
+    }
+  ],
+  "models": {
+    "production_quintals": {
+      "label": "Production (quintals)",
+      "target": "production_quintals",
+      "kind": "xgboost",
+      "metrics": {
+        "production_quintals_rmse": 730.8500738855743,
+        "production_quintals_mae": 69.03523303591992,
+        "production_quintals_r2": 0.8667083180107487,
+        "production_quintals_mape": 28.447799305278053,
+        "production_quintals_smape": 19.330376722127376,
+        "production_quintals_n": 11389,
+        "production_quintals_mean_actual": 359.17728422161736,
+        "production_quintals_mean_predicted": 346.9999892792131,
+        "production_quintals_bias": -12.177294942404274,
+        "production_quintals(log)_rmse": 0.29547934497522216,
+        "production_quintals(log)_mae": 0.18981865406384912,
+        "production_quintals(log)_r2": 0.9681930123158154,
+        "production_quintals(log)_mape": 6.4618066606381195,
+        "production_quintals(log)_smape": 5.715296211026698,
+        "production_quintals(log)_n": 11389,
+        "production_quintals(log)_mean_actual": 4.040222505241756,
+        "production_quintals(log)_mean_predicted": 4.055552367757836,
+        "production_quintals(log)_bias": 0.015329862516080262
+      },
+      "baselines": [
+        {
+          "model": "Global mean",
+          "production_quintals_rmse": 2002.047695875897,
+          "production_quintals_mae": 533.3069657756768,
+          "production_quintals_r2": -0.0002194542003133293,
+          "production_quintals_mape": 2315.3806101447362,
+          "production_quintals_smape": 141.77447625045386,
+          "production_quintals_n": 11389,
+          "production_quintals_mean_actual": 359.17728422161736,
+          "production_quintals_mean_predicted": 388.83233826605715,
+          "production_quintals_bias": 29.655054044439794
+        },
+        {
+          "model": "Per-crop mean",
+          "production_quintals_rmse": 1786.746523112722,
+          "production_quintals_mae": 315.8369463712138,
+          "production_quintals_r2": 0.20334121569124108,
+          "production_quintals_mape": 357.81811158522584,
+          "production_quintals_smape": 89.08993616667091,
+          "production_quintals_n": 11389,
+          "production_quintals_mean_actual": 359.17728422161736,
+          "production_quintals_mean_predicted": 372.05370208382493,
+          "production_quintals_bias": 12.876417862207575
+        },
+        {
+          "model": "Per-state mean",
+          "production_quintals_rmse": 1966.4984280361505,
+          "production_quintals_mae": 480.75874074225135,
+          "production_quintals_r2": 0.034985886427489676,
+          "production_quintals_mape": 1992.3882211250507,
+          "production_quintals_smape": 113.77454263124484,
+          "production_quintals_n": 11389,
+          "production_quintals_mean_actual": 359.17728422161736,
+          "production_quintals_mean_predicted": 378.00901372575237,
+          "production_quintals_bias": 18.831729504135012
+        },
+        {
+          "model": "Per-variety mean",
+          "production_quintals_rmse": 1795.3468481151542,
+          "production_quintals_mae": 323.9527221431019,
+          "production_quintals_r2": 0.19565348390073656,
+          "production_quintals_mape": 473.95958590415825,
+          "production_quintals_smape": 91.41321077712476,
+          "production_quintals_n": 11389,
+          "production_quintals_mean_actual": 359.17728422161736,
+          "production_quintals_mean_predicted": 369.7327925668476,
+          "production_quintals_bias": 10.555508345230237
+        }
+      ],
+      "baseline_table": [
+        {
+          "model": "XGBoost (this project)",
+          "RMSE": 730.8500738855743,
+          "MAE": 69.03523303591992,
+          "R2": 0.8667083180107487,
+          "MAPE %": 28.447799305278053
+        },
+        {
+          "model": "Per-crop mean",
+          "RMSE": 1786.746523112722,
+          "MAE": 315.8369463712138,
+          "R2": 0.20334121569124108,
+          "MAPE %": 357.81811158522584
+        },
+        {
+          "model": "Per-variety mean",
+          "RMSE": 1795.3468481151542,
+          "MAE": 323.9527221431019,
+          "R2": 0.19565348390073656,
+          "MAPE %": 473.95958590415825
+        },
+        {
+          "model": "Per-state mean",
+          "RMSE": 1966.4984280361505,
+          "MAE": 480.75874074225135,
+          "R2": 0.034985886427489676,
+          "MAPE %": 1992.3882211250507
+        },
+        {
+          "model": "Global mean",
+          "RMSE": 2002.047695875897,
+          "MAE": 533.3069657756768,
+          "R2": -0.0002194542003133293,
+          "MAPE %": 2315.3806101447362
+        }
+      ],
+      "interval": {
+        "calibration_factor": 1.0313461576388363,
+        "test_coverage": {
+          "coverage": 81.28896303450698,
+          "mean_width": 201.656833252036,
+          "median_width": 28.60913104527802,
+          "n": 11389
+        },
+        "raw_quantile_coverage": {
+          "coverage": 80.1387303538502,
+          "mean_width": 195.50733650385658,
+          "median_width": 27.739601135253906,
+          "n": 11389
+        },
+        "bootstrap_stability_pct": 7.578624570594274,
+        "n_bootstrap_members": 20
+      },
+      "feature_importance": [
+        {
+          "feature": "season_duration",
+          "importance": 0.30583323471364565
+        },
+        {
+          "feature": "crop",
+          "importance": 0.2292087823152542
+        },
+        {
+          "feature": "crop_group",
+          "importance": 0.16754093440249562
+        },
+        {
+          "feature": "sqrt_quantity",
+          "importance": 0.11132077127695084
+        },
+        {
+          "feature": "quantity",
+          "importance": 0.09710124135017395
+        },
+        {
+          "feature": "variety",
+          "importance": 0.0336872935295105
+        },
+        {
+          "feature": "log_quantity",
+          "importance": 0.02175230160355568
+        },
+        {
+          "feature": "season_name",
+          "importance": 0.012394202232826501
+        },
+        {
+          "feature": "variety_class",
+          "importance": 0.007220503204734996
+        },
+        {
+          "feature": "state",
+          "importance": 0.0038207480683922768
+        },
+        {
+          "feature": "zone_scope",
+          "importance": 0.0036837804364040494
+        },
+        {
+          "feature": "unit",
+          "importance": 0.0027499703282956034
+        },
+        {
+          "feature": "year_index",
+          "importance": 0.0013488319236785173
+        },
+        {
+          "feature": "year",
+          "importance": 0.0012137056328356266
+        },
+        {
+          "feature": "recommended_zone",
+          "importance": 0.0011238029692322016
+        }
+      ],
+      "features": [
+        "state",
+        "crop",
+        "variety",
+        "recommended_zone",
+        "season_name",
+        "season_duration",
+        "unit",
+        "zone_scope",
+        "crop_group",
+        "variety_class",
+        "quantity",
+        "year",
+        "log_quantity",
+        "sqrt_quantity",
+        "year_index"
+      ],
+      "n_fit": 38721,
+      "n_test": 11389,
+      "permutation_importance": [
+        {
+          "feature": "crop",
+          "r2_drop_mean": 0.6322308211746835,
+          "r2_drop_std": 0.1964787986743595
+        },
+        {
+          "feature": "quantity",
+          "r2_drop_mean": 0.6273883178357503,
+          "r2_drop_std": 0.05638271247456437
+        },
+        {
+          "feature": "variety",
+          "r2_drop_mean": 0.31218802998004297,
+          "r2_drop_std": 0.10919460170606887
+        },
+        {
+          "feature": "log_quantity",
+          "r2_drop_mean": 0.17974873401030633,
+          "r2_drop_std": 0.018644212737394177
+        },
+        {
+          "feature": "state",
+          "r2_drop_mean": 0.09507721475643109,
+          "r2_drop_std": 0.06159831792917028
+        },
+        {
+          "feature": "season_duration",
+          "r2_drop_mean": 0.06855906633143416,
+          "r2_drop_std": 0.048982967076617444
+        },
+        {
+          "feature": "crop_group",
+          "r2_drop_mean": 0.0674765421725911,
+          "r2_drop_std": 0.0011389847551208782
+        },
+        {
+          "feature": "sqrt_quantity",
+          "r2_drop_mean": 0.04668246434465684,
+          "r2_drop_std": 0.010803859900613623
+        },
+        {
+          "feature": "variety_class",
+          "r2_drop_mean": 0.03892545792888106,
+          "r2_drop_std": 0.029503981932518804
+        },
+        {
+          "feature": "season_name",
+          "r2_drop_mean": 0.02992130712510203,
+          "r2_drop_std": 0.007734668939293932
+        },
+        {
+          "feature": "unit",
+          "r2_drop_mean": 0.005773707610286394,
+          "r2_drop_std": 0.008164404318237374
+        },
+        {
+          "feature": "year_index",
+          "r2_drop_mean": 0.0010153687263143956,
+          "r2_drop_std": 0.0007459023150505411
+        },
+        {
+          "feature": "year",
+          "r2_drop_mean": -0.00130279955052152,
+          "r2_drop_std": 0.0297116505470522
+        },
+        {
+          "feature": "zone_scope",
+          "r2_drop_mean": -0.010961724689388755,
+          "r2_drop_std": 0.015140653282536286
+        },
+        {
+          "feature": "recommended_zone",
+          "r2_drop_mean": -0.056248563375804715,
+          "r2_drop_std": 0.01058133313403385
+        }
+      ],
+      "cv_folds": [
+        {
+          "fold": 1,
+          "production_quintals_rmse": 610.9390520762834,
+          "production_quintals_mae": 76.79886315897613,
+          "production_quintals_r2": 0.9044935137850539,
+          "production_quintals_mape": 27.29622313673611,
+          "production_quintals_smape": 19.519330547471583,
+          "production_quintals_n": 7745,
+          "production_quintals_mean_actual": 406.8752756617173,
+          "production_quintals_mean_predicted": 384.3194088696991,
+          "production_quintals_bias": -22.555866792018207
+        },
+        {
+          "fold": 2,
+          "production_quintals_rmse": 583.7933313724045,
+          "production_quintals_mae": 70.61166590201123,
+          "production_quintals_r2": 0.8793841730806409,
+          "production_quintals_mape": 26.079824011158557,
+          "production_quintals_smape": 19.34008013845925,
+          "production_quintals_n": 7744,
+          "production_quintals_mean_actual": 380.0253731921488,
+          "production_quintals_mean_predicted": 380.5863966868559,
+          "production_quintals_bias": 0.5610234947071149
+        },
+        {
+          "fold": 3,
+          "production_quintals_rmse": 415.384347683504,
+          "production_quintals_mae": 71.89405260883125,
+          "production_quintals_r2": 0.9471364695467406,
+          "production_quintals_mape": 25.601099156581824,
+          "production_quintals_smape": 18.62957930728191,
+          "production_quintals_n": 7744,
+          "production_quintals_mean_actual": 393.5117704028925,
+          "production_quintals_mean_predicted": 383.4902954521716,
+          "production_quintals_bias": -10.021474950720915
+        },
+        {
+          "fold": 4,
+          "production_quintals_rmse": 279.89328592358373,
+          "production_quintals_mae": 58.27647812434765,
+          "production_quintals_r2": 0.9680099290018022,
+          "production_quintals_mape": 24.88148134690128,
+          "production_quintals_smape": 19.281797784240663,
+          "production_quintals_n": 7744,
+          "production_quintals_mean_actual": 366.4827763429752,
+          "production_quintals_mean_predicted": 362.6821035892098,
+          "production_quintals_bias": -3.8006727537654115
+        },
+        {
+          "fold": 5,
+          "production_quintals_rmse": 866.8948955653196,
+          "production_quintals_mae": 84.03200207263846,
+          "production_quintals_r2": 0.8289094231036492,
+          "production_quintals_mape": 27.583444128257273,
+          "production_quintals_smape": 20.149109481040874,
+          "production_quintals_n": 7744,
+          "production_quintals_mean_actual": 397.26416580578507,
+          "production_quintals_mean_predicted": 370.9601004113759,
+          "production_quintals_bias": -26.30406539440918
+        }
+      ],
+      "cv_summary": [
+        {
+          "metric": "RMSE",
+          "mean": 551.380982524219,
+          "std": 221.55552770279147
+        },
+        {
+          "metric": "MAE",
+          "mean": 72.32261237336095,
+          "std": 9.454516339641193
+        },
+        {
+          "metric": "R2",
+          "mean": 0.9055867017035772,
+          "std": 0.055204653639205556
+        }
+      ],
+      "calibration_curve": [
+        {
+          "bin": "1-8",
+          "n": 1139,
+          "predicted_mid": 4.764087887460201,
+          "actual_mean": 4.5485601404741,
+          "coverage": 79.01668129938543,
+          "mean_width": 2.837247214339562
+        },
+        {
+          "bin": "8-14",
+          "n": 1139,
+          "predicted_mid": 11.00878963804949,
+          "actual_mean": 10.62441615452151,
+          "coverage": 83.40649692712906,
+          "mean_width": 6.839678462477398
+        },
+        {
+          "bin": "14-23",
+          "n": 1139,
+          "predicted_mid": 18.38889710603479,
+          "actual_mean": 17.87153643546971,
+          "coverage": 83.3187006145742,
+          "mean_width": 11.189515113992604
+        },
+        {
+          "bin": "23-34",
+          "n": 1139,
+          "predicted_mid": 28.037966300952217,
+          "actual_mean": 27.215013169446884,
+          "coverage": 81.29938542581212,
+          "mean_width": 17.11624504389277
+        },
+        {
+          "bin": "34-49",
+          "n": 1138,
+          "predicted_mid": 40.44619532206509,
+          "actual_mean": 39.26417398945519,
+          "coverage": 82.86467486818981,
+          "mean_width": 24.79382189883022
+        },
+        {
+          "bin": "49-73",
+          "n": 1139,
+          "predicted_mid": 59.451271372044054,
+          "actual_mean": 57.7375153643547,
+          "coverage": 82.08955223880598,
+          "mean_width": 35.81034457344449
+        },
+        {
+          "bin": "73-112",
+          "n": 1139,
+          "predicted_mid": 90.70654849898351,
+          "actual_mean": 89.52516242317822,
+          "coverage": 81.47497805092186,
+          "mean_width": 54.312291217709046
+        },
+        {
+          "bin": "112-196",
+          "n": 1139,
+          "predicted_mid": 148.61410501958733,
+          "actual_mean": 148.2625021949078,
+          "coverage": 81.47497805092186,
+          "mean_width": 87.80436274829937
+        },
+        {
+          "bin": "196-508",
+          "n": 1139,
+          "predicted_mid": 311.67535567345874,
+          "actual_mean": 316.4365583845478,
+          "coverage": 81.47497805092186,
+          "mean_width": 189.20656104559356
+        },
+        {
+          "bin": "508-51,456",
+          "n": 1139,
+          "predicted_mid": 2695.986013463317,
+          "actual_mean": 2880.0065320456542,
+          "coverage": 76.47058823529412,
+          "mean_width": 1586.5029859995389
+        }
+      ],
+      "lgbm": {
+        "production_quintals_rmse": 711.0874397453346,
+        "production_quintals_mae": 68.05874646631531,
+        "production_quintals_r2": 0.8738194334566416,
+        "production_quintals_mape": 28.997449069672303,
+        "production_quintals_smape": 19.482679735850475,
+        "production_quintals_n": 11389,
+        "production_quintals_mean_actual": 359.17728422161736,
+        "production_quintals_mean_predicted": 352.85448985381953,
+        "production_quintals_bias": -6.322794367797826
+      }
+    },
+    "cost": {
+      "label": "Cultivation cost (INR)",
+      "target": "cost",
+      "kind": "xgboost",
+      "metrics": {
+        "cost_rmse": 136072.19156071875,
+        "cost_mae": 22378.361891945453,
+        "cost_r2": 0.8217052376460479,
+        "cost_mape": 14.975205166345603,
+        "cost_smape": 14.765046873238804,
+        "cost_n": 11389,
+        "cost_mean_actual": 140638.8640602722,
+        "cost_mean_predicted": 136569.26959754247,
+        "cost_bias": -4069.5944627297285,
+        "cost(log)_rmse": 0.18946944334607216,
+        "cost(log)_mae": 0.1486100274049606,
+        "cost(log)_r2": 0.9763943275959991,
+        "cost(log)_mape": 1.360574961254159,
+        "cost(log)_smape": 1.3606966033442474,
+        "cost(log)_n": 11389,
+        "cost(log)_mean_actual": 11.064782136670784,
+        "cost(log)_mean_predicted": 11.057638222386833,
+        "cost(log)_bias": -0.007143914283950892
+      },
+      "baselines": [
+        {
+          "model": "Global mean",
+          "cost_rmse": 322285.58596523997,
+          "cost_mae": 135428.03902980575,
+          "cost_r2": -0.0001878880453796139,
+          "cost_mape": 397.37045982263123,
+          "cost_smape": 94.8279758342958,
+          "cost_n": 11389,
+          "cost_mean_actual": 140638.8640602722,
+          "cost_mean_predicted": 145056.09048010127,
+          "cost_bias": 4417.226419829065
+        },
+        {
+          "model": "Per-crop mean",
+          "cost_rmse": 302924.9074968907,
+          "cost_mae": 117257.54416468133,
+          "cost_r2": 0.11637133862165616,
+          "cost_mape": 262.3770542942968,
+          "cost_smape": 82.98893659545445,
+          "cost_n": 11389,
+          "cost_mean_actual": 140638.8640602722,
+          "cost_mean_predicted": 143529.04361888126,
+          "cost_bias": 2890.1795586090593
+        },
+        {
+          "model": "Per-state mean",
+          "cost_rmse": 317361.5764490746,
+          "cost_mae": 129855.86778186035,
+          "cost_r2": 0.030141188523202134,
+          "cost_mape": 342.71678057750205,
+          "cost_smape": 89.96235284825829,
+          "cost_n": 11389,
+          "cost_mean_actual": 140638.8640602722,
+          "cost_mean_predicted": 143251.02644861976,
+          "cost_bias": 2612.162388347555
+        },
+        {
+          "model": "Per-variety mean",
+          "cost_rmse": 305561.6369510977,
+          "cost_mae": 118853.74544572974,
+          "cost_r2": 0.10092176934921515,
+          "cost_mape": 273.24220327164204,
+          "cost_smape": 83.63282078599863,
+          "cost_n": 11389,
+          "cost_mean_actual": 140638.8640602722,
+          "cost_mean_predicted": 143786.01748203632,
+          "cost_bias": 3147.1534217641165
+        }
+      ],
+      "baseline_table": [
+        {
+          "model": "XGBoost (this project)",
+          "RMSE": 136072.19156071875,
+          "MAE": 22378.361891945453,
+          "R2": 0.8217052376460479,
+          "MAPE %": 14.975205166345603
+        },
+        {
+          "model": "Per-crop mean",
+          "RMSE": 302924.9074968907,
+          "MAE": 117257.54416468133,
+          "R2": 0.11637133862165616,
+          "MAPE %": 262.3770542942968
+        },
+        {
+          "model": "Per-variety mean",
+          "RMSE": 305561.6369510977,
+          "MAE": 118853.74544572974,
+          "R2": 0.10092176934921515,
+          "MAPE %": 273.24220327164204
+        },
+        {
+          "model": "Per-state mean",
+          "RMSE": 317361.5764490746,
+          "MAE": 129855.86778186035,
+          "R2": 0.030141188523202134,
+          "MAPE %": 342.71678057750205
+        },
+        {
+          "model": "Global mean",
+          "RMSE": 322285.58596523997,
+          "MAE": 135428.03902980575,
+          "R2": -0.0001878880453796139,
+          "MAPE %": 397.37045982263123
+        }
+      ],
+      "interval": {
+        "calibration_factor": 1.033984297956522,
+        "test_coverage": {
+          "coverage": 79.04996048819037,
+          "mean_width": 68008.49138633689,
+          "median_width": 30989.6241740782,
+          "n": 11389
+        },
+        "raw_quantile_coverage": {
+          "coverage": 77.93484941610326,
+          "mean_width": 65773.17313208092,
+          "median_width": 29971.078125,
+          "n": 11389
+        },
+        "bootstrap_stability_pct": 6.350169174849178,
+        "n_bootstrap_members": 20
+      },
+      "feature_importance": [
+        {
+          "feature": "sqrt_quantity",
+          "importance": 0.2676236629486084
+        },
+        {
+          "feature": "quantity",
+          "importance": 0.22470806539058685
+        },
+        {
+          "feature": "season_duration",
+          "importance": 0.1931731153454166
+        },
+        {
+          "feature": "crop",
+          "importance": 0.1148945763707161
+        },
+        {
+          "feature": "crop_group",
+          "importance": 0.04955776163842529
+        },
+        {
+          "feature": "log_quantity",
+          "importance": 0.048370588570833206
+        },
+        {
+          "feature": "season_name",
+          "importance": 0.028654612426180393
+        },
+        {
+          "feature": "year_index",
+          "importance": 0.023521428927779198
+        },
+        {
+          "feature": "year",
+          "importance": 0.01628493145108223
+        },
+        {
+          "feature": "variety",
+          "importance": 0.01616329699754715
+        },
+        {
+          "feature": "variety_class",
+          "importance": 0.005189995368709788
+        },
+        {
+          "feature": "state",
+          "importance": 0.0050313035026192665
+        },
+        {
+          "feature": "zone_scope",
+          "importance": 0.004172878689132631
+        },
+        {
+          "feature": "unit",
+          "importance": 0.0013386948849074543
+        },
+        {
+          "feature": "recommended_zone",
+          "importance": 0.0013150433078408241
+        }
+      ],
+      "features": [
+        "state",
+        "crop",
+        "variety",
+        "recommended_zone",
+        "season_name",
+        "season_duration",
+        "unit",
+        "zone_scope",
+        "crop_group",
+        "variety_class",
+        "quantity",
+        "year",
+        "log_quantity",
+        "sqrt_quantity",
+        "year_index"
+      ],
+      "n_fit": 38721,
+      "n_test": 11389,
+      "permutation_importance": [
+        {
+          "feature": "quantity",
+          "r2_drop_mean": 0.5700618098568893,
+          "r2_drop_std": 0.04894857693312152
+        },
+        {
+          "feature": "crop",
+          "r2_drop_mean": 0.3175394082305509,
+          "r2_drop_std": 0.15534435330631186
+        },
+        {
+          "feature": "log_quantity",
+          "r2_drop_mean": 0.11995510263308924,
+          "r2_drop_std": 0.011748537118260223
+        },
+        {
+          "feature": "variety",
+          "r2_drop_mean": 0.043267388058796964,
+          "r2_drop_std": 0.008437850177851838
+        },
+        {
+          "feature": "sqrt_quantity",
+          "r2_drop_mean": 0.03635127506013328,
+          "r2_drop_std": 0.004944184568705078
+        },
+        {
+          "feature": "state",
+          "r2_drop_mean": 0.02099297864227904,
+          "r2_drop_std": 0.04043501444990156
+        },
+        {
+          "feature": "season_name",
+          "r2_drop_mean": 0.016736953149408967,
+          "r2_drop_std": 0.008837321445574831
+        },
+        {
+          "feature": "year_index",
+          "r2_drop_mean": 0.01670684090448445,
+          "r2_drop_std": 0.009682707538426873
+        },
+        {
+          "feature": "zone_scope",
+          "r2_drop_mean": 0.011559643148537746,
+          "r2_drop_std": 0.015957626669761613
+        },
+        {
+          "feature": "recommended_zone",
+          "r2_drop_mean": 0.008696897505668858,
+          "r2_drop_std": 0.017086850796313686
+        },
+        {
+          "feature": "crop_group",
+          "r2_drop_mean": 0.004999248427262293,
+          "r2_drop_std": 0.003959494084503089
+        },
+        {
+          "feature": "variety_class",
+          "r2_drop_mean": 0.003778231366892556,
+          "r2_drop_std": 0.008308185031324074
+        },
+        {
+          "feature": "unit",
+          "r2_drop_mean": 0.0019278856913535665,
+          "r2_drop_std": 0.0024670115729675504
+        },
+        {
+          "feature": "season_duration",
+          "r2_drop_mean": -0.004113451661188335,
+          "r2_drop_std": 0.002896511179112168
+        },
+        {
+          "feature": "year",
+          "r2_drop_mean": -0.03595048651504392,
+          "r2_drop_std": 0.08079870601904068
+        }
+      ],
+      "cv_folds": [
+        {
+          "fold": 1,
+          "cost_rmse": 219967.98280196535,
+          "cost_mae": 26433.066552251767,
+          "cost_r2": 0.7130932153655121,
+          "cost_mape": 15.949911010529611,
+          "cost_smape": 15.707387825070066,
+          "cost_n": 7745,
+          "cost_mean_actual": 148263.75554422208,
+          "cost_mean_predicted": 145085.837031302,
+          "cost_bias": -3177.918512920063
+        },
+        {
+          "fold": 2,
+          "cost_rmse": 100304.71495906278,
+          "cost_mae": 22326.286310165975,
+          "cost_r2": 0.889242861705358,
+          "cost_mape": 14.3409751278915,
+          "cost_smape": 14.050630069910888,
+          "cost_n": 7744,
+          "cost_mean_actual": 143497.80205320247,
+          "cost_mean_predicted": 140076.33057536764,
+          "cost_bias": -3421.471477834828
+        },
+        {
+          "fold": 3,
+          "cost_rmse": 100023.04035514554,
+          "cost_mae": 23796.858573732614,
+          "cost_r2": 0.8815155187459446,
+          "cost_mape": 15.634524134188432,
+          "cost_smape": 15.83518791274368,
+          "cost_n": 7744,
+          "cost_mean_actual": 145147.00558755166,
+          "cost_mean_predicted": 140389.39335520405,
+          "cost_bias": -4757.612232347601
+        },
+        {
+          "fold": 4,
+          "cost_rmse": 84774.54923989705,
+          "cost_mae": 23621.090605843914,
+          "cost_r2": 0.9078285056830673,
+          "cost_mape": 15.42819099737523,
+          "cost_smape": 15.313478736980047,
+          "cost_n": 7744,
+          "cost_mean_actual": 142648.44028279962,
+          "cost_mean_predicted": 139431.09921340313,
+          "cost_bias": -3217.341069396498
+        },
+        {
+          "fold": 5,
+          "cost_rmse": 102162.72541691117,
+          "cost_mae": 22463.976443911462,
+          "cost_r2": 0.8943412642912137,
+          "cost_mape": 14.333940708796474,
+          "cost_smape": 14.143745130713087,
+          "cost_n": 7744,
+          "cost_mean_actual": 145723.03471978306,
+          "cost_mean_predicted": 140541.7175771855,
+          "cost_bias": -5181.317142597545
+        }
+      ],
+      "cv_summary": [
+        {
+          "metric": "RMSE",
+          "mean": 121446.60255459638,
+          "std": 55518.28123699452
+        },
+        {
+          "metric": "MAE",
+          "mean": 23728.25569718115,
+          "std": 1650.4630157592262
+        },
+        {
+          "metric": "R2",
+          "mean": 0.8572042731582192,
+          "std": 0.08112871536237112
+        }
+      ],
+      "calibration_curve": [
+        {
+          "bin": "1,626-13,918",
+          "n": 1139,
+          "predicted_mid": 8995.20404001313,
+          "actual_mean": 8768.835346795435,
+          "coverage": 74.45127304653204,
+          "mean_width": 4153.864746518851
+        },
+        {
+          "bin": "13,918-23,477",
+          "n": 1139,
+          "predicted_mid": 18629.62614389893,
+          "actual_mean": 18498.69442493415,
+          "coverage": 78.1387181738367,
+          "mean_width": 9030.470731203657
+        },
+        {
+          "bin": "23,477-34,343",
+          "n": 1139,
+          "predicted_mid": 28670.226682462267,
+          "actual_mean": 27908.467910447762,
+          "coverage": 81.21158911325725,
+          "mean_width": 14065.305843020236
+        },
+        {
+          "bin": "34,343-48,339",
+          "n": 1139,
+          "predicted_mid": 41226.63857683856,
+          "actual_mean": 40753.32318700614,
+          "coverage": 81.29938542581212,
+          "mean_width": 20113.64259314076
+        },
+        {
+          "bin": "48,339-64,544",
+          "n": 1138,
+          "predicted_mid": 56211.483199799964,
+          "actual_mean": 55531.09946397188,
+          "coverage": 80.40421792618629,
+          "mean_width": 27416.695767849647
+        },
+        {
+          "bin": "64,544-87,027",
+          "n": 1139,
+          "predicted_mid": 75446.88370957134,
+          "actual_mean": 75095.12302897278,
+          "coverage": 81.21158911325725,
+          "mean_width": 36340.015998263494
+        },
+        {
+          "bin": "87,027-120,028",
+          "n": 1139,
+          "predicted_mid": 102517.74299568264,
+          "actual_mean": 103275.04085376646,
+          "coverage": 79.1044776119403,
+          "mean_width": 49486.68768075786
+        },
+        {
+          "bin": "120,028-181,628",
+          "n": 1139,
+          "predicted_mid": 147797.30019416896,
+          "actual_mean": 146590.4269007902,
+          "coverage": 80.33362598770852,
+          "mean_width": 72066.56474801675
+        },
+        {
+          "bin": "181,628-306,644",
+          "n": 1139,
+          "predicted_mid": 234769.99377372878,
+          "actual_mean": 236105.5503072871,
+          "coverage": 78.75329236172081,
+          "mean_width": 113225.42388256916
+        },
+        {
+          "bin": "306,644-6,033,336",
+          "n": 1139,
+          "predicted_mid": 656272.3378622697,
+          "actual_mean": 693787.3576997367,
+          "coverage": 75.5926251097454,
+          "mean_width": 334150.6037722757
+        }
+      ],
+      "lgbm": {
+        "cost_rmse": 133270.25178226776,
+        "cost_mae": 22686.165902109526,
+        "cost_r2": 0.828972375835528,
+        "cost_mape": 15.28195513553622,
+        "cost_smape": 15.143999126549224,
+        "cost_n": 11389,
+        "cost_mean_actual": 140638.8640602722,
+        "cost_mean_predicted": 136287.91254473574,
+        "cost_bias": -4350.951515536464
+      }
+    }
+  },
+  "elapsed_seconds": 208.6
+}

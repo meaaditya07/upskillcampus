@@ -1,0 +1,23 @@
+# AgriYield AI -- Crop Production & Cost Forecasting Platform
+# Python 3.10+ (developed and verified on CPython 3.14.4 / Windows)
+
+# --- Core data stack -------------------------------------------------------
+pandas>=2.2
+numpy>=1.26
+pyarrow>=15.0
+
+# --- Machine learning ------------------------------------------------------
+scikit-learn>=1.4          # TargetEncoder requires >=1.3
+xgboost>=2.1               # primary booster (self-contained Windows DLL)
+lightgbm>=4.3              # benchmark arm; app degrades gracefully if absent
+joblib>=1.3
+
+# --- Dashboard -------------------------------------------------------------
+streamlit>=1.40
+plotly>=5.20
+
+# --- Utilities -------------------------------------------------------------
+requests>=2.31
+
+# --- Testing (dev) ---------------------------------------------------------
+pytest>=8.0

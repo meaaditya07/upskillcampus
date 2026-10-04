@@ -1,0 +1,35 @@
+line-length = 90
+target-version = "py311"
+
+[lint]
+select = [
+    "E",    # pycodestyle
+    "W",    # warnings
+    "F",    # pyflakes
+    "I",    # import sorting
+    "UP",   # pyupgrade
+    "B",    # bugbear
+    "C4",   # comprehensions
+    "SIM",  # simplify
+    "RUF",  # ruff-specific
+    "ISC",  # implicit string concat
+    "DTZ",  # naive datetimes
+    "PLW",  # pylint warnings
+    "PLC0206",  # dict iteration
+    "PLR0124",  # self-comparison
+]
+ignore = [
+    # This codebase degrades on purpose at well-defined boundaries: optional
+    # imports (lightgbm), network fetch fallbacks, not-yet-fitted
+    # preprocessors, missing artefacts, and Streamlit page rendering. Each site
+    # either logs, returns a safe default, or surfaces a message to the user,
+    # and none catch BaseException. Narrowing these to specific types would
+    # make the fallbacks fragile for no gain.
+    "BLE001",
+    # Streamlit and pandas both use long call chains that read worse wrapped.
+    "E501",
+]
+
+[lint.per-file-ignores]
+# Tests reach into private helpers on purpose and use bare asserts.
+"tests/*" = ["B011", "PLC2701", "SLF001"]
