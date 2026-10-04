@@ -1,129 +1,42 @@
-# AgriYield AI
+<div align="center">
 
-Crop production and cultivation-cost forecasting for India, with profitability
-analysis, crop recommendations and an honest diagnostics page.
+# 🌾 AgriYield AI
 
-A Streamlit front end over a Streamlit-free service layer, so the same code
-backs the UI today and a FastAPI endpoint later without moving any logic.
+**Smart Crop Yield Forecasting, Cost Optimization & Agricultural Insights for India**
+
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.28%2B-FF4B4B.svg)](https://streamlit.io/)
+[![XGBoost](https://img.shields.io/badge/XGBoost-ML-green.svg)](https://xgboost.readthedocs.io/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+An end-to-end Machine Learning platform predicting crop production, forecasting cultivation costs, and delivering data-driven crop recommendations across Indian states and agricultural zones.
+
+[Key Features](#-key-features) • [Quick Start](#-quick-start) • [Architecture](#%EF%B8%8F-architecture) • [Custom Datasets](#-using-your-own-data) • [Testing](#-testing--quality)
 
 ---
 
-## Quick start
+</div>
+
+## 🌟 Key Features
+
+* **📈 Precision Yield & Cost Forecasting:** Powered by XGBoost with log-transformed target optimization and calibrated 80% quantile prediction intervals.
+* **💡 Smart Crop & Zone Recommendations:** Ranks optimal crops using a multi-factor scoring algorithm (50% Efficiency, 30% Cost, 20% Reliability).
+* **🔍 Honest Diagnostics & Model Audits:** Real-time visibility into feature importance, residuals, calibration error, and leakage prevention audits.
+* **🗺️ Interactive Geographic Visualizations:** Interactive maps displaying nationwide cultivation metrics and regional insights.
+* **⚙️ Clean Decoupled Architecture:** Streamlit UI completely separated from core service logic — ready to be exposed as a FastAPI backend effortlessly.
+
+---
+
+## 🚀 Quick Start
+
+### 1. Prerequisites & Installation
+
+Clone the repository and install dependencies:
 
 ```bash
+git clone [https://github.com/meaaditya07/upskillcampus.git](https://github.com/meaaditya07/upskillcampus.git)
+cd upskillcampus
 python -m pip install -r requirements.txt
-python scripts/bootstrap.py
-python -m streamlit run app.py
-```
-
-`bootstrap.py` generates the dataset (synthetic, if you have no CSV), downloads
-and dissolves the India basemap, trains both models and verifies the artefacts.
-It is safe to re-run; each step is skipped if its output already exists.
-
-```bash
-python scripts/bootstrap.py --force        # regenerate everything and retrain
-python scripts/bootstrap.py --fast         # quick models while iterating (5 bags, no CV)
-python scripts/bootstrap.py --data-only    # dataset and map, no training
-```
-
-> Use `python -m streamlit`, not the bare `streamlit` command. User script
-> directories are frequently not on `PATH` on Windows and macOS.
-
-## Using your own data
-
-Drop a CSV anywhere in `data/raw/`. It wins over the synthetic file
-automatically, and the sidebar relabels itself from **synthetic demo data** to
-the file path. Required columns, with the header spellings that are recognised:
-
-| Meaning | Accepted headers |
-| --- | --- |
-| Crop | `Crop`, `crop` |
-| Variety | `Variety`, `variety` |
-| State | `State`, `state` |
-| Area (hectares) | `Quantity`, `Area`, `area_ha` |
-| Production (in `Unit`) | `Production`, `production` |
-| Unit | `Unit`, `unit` |
-| Cultivation cost (total INR) | `Cost`, `cost` |
-| Season | `Season`, `season` |
-| Zone | `Recommended Zone`, `Zone` |
-| Year | `Year`, `year` |
-
-Then retrain: `python -m src.train_models --data data/raw/your_file.csv`.
-
-Column matching is case- and separator-insensitive, so `Recommended Zone`,
-`recommended_zone` and `RECOMMENDEDZONE` all resolve. Anything unmapped is
-reported on the Diagnostics page rather than silently ignored.
-
-## Pages
-
-| Page | What it answers |
-| --- | --- |
-| **Overview** | Where does India grow what, and at what cost? |
-| **Yield & cost forecast** | What will *my* field produce and cost, and what is that worth? |
-| **Recommendations** | Where and what should I plant, and how sure are we? |
-| **Diagnostics** | How good is the model, and what can it not do? |
-
-## How it works
-
-```
-data/raw/*.csv
-     │  src/data_loader.py      resolve headers, coerce, clean, canonicalise
-     │  src/schema.py           states, crops, units, zones, seasons
-     ▼
-  cleaned frame  ── 57,352 rows
-     │  src/preprocessing.py    features, outlier flags, leakage firewall
-     │                         high-cardinality target encoding inside CV folds
-     ▼
-  src/train_models.py
-     │  src/models.py           XGBoost on log1p(target) + calibrated quantile pair
-     │  src/evaluate.py         baselines, CV, permutation importance, residuals
-     ▼
-  models/*.joblib + models/metrics.json
-     │  src/services/registry.py    stamp-aware artifact cache
-     ▼
-  src/services/{predictor,profitability,recommend,insights}.py   ← no Streamlit imports
-     ▼
-  components/ + page_*.py + app.py
-```
-
-### Data semantics
-
-These are the decisions that quietly corrupt everything downstream if they are
-wrong, so they are enforced in one place and asserted in tests:
-
-- **Area** is `quantity`, in cultivated hectares. Cultivation cost is a **total**
-  for that area, so `cost_per_unit` is per hectare.
-- **Production** is reported in the source `unit` and converted **once**, at
-  load, to `production_quintals`.
-- **An Indian quintal is 50 kg**, so one tonne is exactly 20 quintals. `Tons`
-  is a unit of mass in the source and is treated as 20 quintals. Kilograms,
-  170 kg bales and 100 kg bundles are handled too.
-- **Year** may be `2001`, `2001-02`, `2001-2002` or `Kharif 2001`.
-- **Zones** are stored as `"<Scope> - <Name>"` (`Mandal - Ludhiana`). Hyphens,
-  en dashes, em dashes, colons, slashes and pipes all parse.
-- **A missing or unreadable unit becomes `Unknown`** and is counted in
-  `report.unit_fallbacks`, not silently coerced.
-
-### Leakage prevention
-
-Production, cost and every ratio derived from them are excluded from both
-feature sets, as is `is_outlier` — it is computed from the targets. The
-high-cardinality columns (`state`, `crop`, `variety`, `recommended_zone`) are
-target-encoded **inside cross-validation folds**; fitting the encoder on the
-whole dataset first would leak each row's own target into its own feature.
-
-`assert_no_leakage()` runs at pipeline construction, and
-`tests/test_preprocessing.py` asserts both directions: that the real feature
-sets are clean, and that the guard actually raises when fed a dirty one.
-
-### Prediction intervals
-
-The published 80% range is **not** the bootstrap ensemble. It is two
-`reg:quantileerror` XGBoost models at the 10th and 90th percentiles of
-`log1p(target)`, widened by a scalar factor fitted on a calibration split that
-neither model saw. The 20 bootstrap bags are reported as a stability diagnostic
-(~7% spread) and are not used for the interval, because the bags are too
-correlated for their spread to be a variance estimate.
 
 ### Recommendations
 
